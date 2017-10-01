@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +33,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class AjouterEleves extends Scene {
@@ -55,6 +57,7 @@ public class AjouterEleves extends Scene {
 	TextField txt_prenom;
 	ChoiceBox<String> ch_groupeCl;
 	DatePicker dp;
+	Text textAge;
 	TextField txt_adresse;
 	TextField txt_cp;
 	TextField txt_ville;
@@ -115,7 +118,6 @@ public class AjouterEleves extends Scene {
 		lbl_tel = new Label("Téléphone");
 
 		txt_nom = new TextField();
-		txt_nom.requestFocus();
 		txt_prenom = new TextField();
 		ch_groupeCl = new ChoiceBox<String>();
 		ch_groupeCl.setMinWidth(100.0);;
@@ -153,6 +155,7 @@ public class AjouterEleves extends Scene {
 		ch_groupeCl.setTooltip(tt_groupeCl);
 		
 		dp = new DatePicker();
+		textAge = new Text("");
 		txt_adresse = new TextField();
 		txt_cp = new TextField();
 		txt_ville = new TextField();
@@ -166,6 +169,8 @@ public class AjouterEleves extends Scene {
 		gridForm.add(ch_groupeCl, 1, 2);
 		gridForm.add(lbl_dn, 0, 3);
 		gridForm.add(dp, 1, 3);
+		gridForm.add(textAge, 2, 3);
+		
 		gridForm.add(lbl_adresse, 0, 4);
 		gridForm.add(txt_adresse, 1, 4);
 		gridForm.add(lbl_cp, 0, 5);
@@ -183,6 +188,13 @@ public class AjouterEleves extends Scene {
 
 		boutons.setAlignment(Pos.CENTER);
 		root.setBottom(boutons);
+		
+		dp.setOnAction(e->{
+			LocalDate date = dp.getValue();
+			int age = date.until(LocalDate.now()).getYears();
+			String ageEleve = String.valueOf(age);
+			textAge.setText(ageEleve+" ans");
+		});
 
 		ajouter = new Button("Ajouter");
 		ajouter.setOnAction(e -> ajouter());
@@ -190,6 +202,8 @@ public class AjouterEleves extends Scene {
 		fermer.setOnAction(e -> save_and_close());
 
 		boutons.getChildren().addAll(ajouter, fermer);
+		
+		txt_nom.requestFocus();
 
 	}
 
@@ -221,8 +235,6 @@ public class AjouterEleves extends Scene {
 		txt_cp.setText("");
 		txt_ville.setText("");
 		txt_tel.setText("");
-
-		txt_nom.requestFocus();
 
 	}
 
