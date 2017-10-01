@@ -100,10 +100,10 @@ public class AjouterClasses extends Scene {
 			BufferedWriter bw = new BufferedWriter(fw);
 			
 			List<String> listeClasses = mesClasses.getItems();
-			String [] dataTab = new String[listeClasses.size()];
-			listeClasses.toArray(dataTab);
+			String [] data = new String[listeClasses.size()];
+			listeClasses.toArray(data);
 			
-			String dataString = String.join("|", dataTab);
+			String dataString = String.join("|", data);
 			bw.write(dataString);
 			bw.flush();
 			bw.close();
