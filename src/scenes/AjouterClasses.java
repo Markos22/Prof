@@ -39,7 +39,7 @@ public class AjouterClasses extends Scene {
 				creer_click();
 			}
 		});
-		File fichierClasses = new File("classes.dat");
+
 		mesClasses = new ListView<String>();
 		mesClasses.setOnKeyPressed(ke->{
 			if(ke.getCode()==KeyCode.DELETE){
@@ -47,7 +47,10 @@ public class AjouterClasses extends Scene {
 			}
 		});
 
-		
+		/**
+		 * Récupération de la liste des classes sous forme de tableau de chaînes
+		 */
+		File fichierClasses = new File("classes.dat");
 		if (fichierClasses.exists()) {
 			try {
 				FileReader fr = new FileReader(fichierClasses);
@@ -68,6 +71,7 @@ public class AjouterClasses extends Scene {
 			
 		}
 
+		
 		mesClasses.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		nouvelleClasse = new TextField();
 		

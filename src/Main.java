@@ -1,3 +1,4 @@
+import Modele.GroupeClasse;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -98,12 +99,9 @@ public class Main extends Application{
 		
 		MenuBar mb = new MenuBar(mFichier,mDonnees,mNotes,mAide);
 		top.getChildren().add(mb);
-		
+				
 		primaryStage.setScene(scene);
 		primaryStage.show();
-	}
-
-	public void btn_OK_Click() {
 	}
 
 }

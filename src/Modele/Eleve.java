@@ -81,7 +81,7 @@ public class Eleve implements Serializable {
 		return dateNaissance;
 	}
 	/**
-	 * @param localDate the dateNaissance to set
+	 * @param LocalDate the dateNaissance to set
 	 */
 	public void setDateNaissance(LocalDate localDate) {
 		this.dateNaissance = localDate;

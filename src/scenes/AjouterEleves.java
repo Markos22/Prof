@@ -1,11 +1,18 @@
 package scenes;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import Modele.Eleve;
+import Modele.GroupeClasse;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -18,6 +25,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
@@ -45,7 +53,7 @@ public class AjouterEleves extends Scene {
 	Label lbl_tel;
 	TextField txt_nom;
 	TextField txt_prenom;
-	ChoiceBox ch_groupeCl;
+	ChoiceBox<String> ch_groupeCl;
 	DatePicker dp;
 	TextField txt_adresse;
 	TextField txt_cp;
@@ -56,8 +64,8 @@ public class AjouterEleves extends Scene {
 		super(root, width, height);
 		this.stage = stage;
 		this.mainScene = mainScene;
-		this.setOnKeyPressed(ke->{
-			if(ke.getCode()==KeyCode.ENTER) {
+		this.setOnKeyPressed(ke -> {
+			if (ke.getCode() == KeyCode.ENTER) {
 				ajouter();
 			}
 		});
@@ -68,7 +76,7 @@ public class AjouterEleves extends Scene {
 		TableColumn<Eleve, String> nomEleve = new TableColumn<Eleve, String>("Nom");
 		TableColumn<Eleve, String> prenomEleve = new TableColumn<Eleve, String>("Prénom");
 		TableColumn<Eleve, String> groupeClEleve = new TableColumn<Eleve, String>("Classe");
-		TableColumn<Eleve, Date> dateNaissanceEleve = new TableColumn<Eleve, Date>("Date de Naissance");
+		TableColumn<Eleve, LocalDate> dateNaissanceEleve = new TableColumn<Eleve, LocalDate>("Date de Naissance");
 		TableColumn<Eleve, String> adresseEleve = new TableColumn<Eleve, String>("Adresse");
 		TableColumn<Eleve, String> codePostalEleve = new TableColumn<Eleve, String>("Code Postal");
 		TableColumn<Eleve, String> villeEleve = new TableColumn<Eleve, String>("Ville");
@@ -76,7 +84,12 @@ public class AjouterEleves extends Scene {
 
 		nomEleve.setCellValueFactory(new PropertyValueFactory<Eleve, String>("Nom"));
 		prenomEleve.setCellValueFactory(new PropertyValueFactory<Eleve, String>("Prenom"));
-		dateNaissanceEleve.setCellValueFactory(new PropertyValueFactory<Eleve, Date>("DateNaissance"));
+		
+		
+		groupeClEleve.setCellValueFactory(new PropertyValueFactory<Eleve,String>("GroupeCl"));
+		
+		dateNaissanceEleve.setCellValueFactory(new PropertyValueFactory<Eleve, LocalDate>("DateNaissance"));
+		
 		adresseEleve.setCellValueFactory(new PropertyValueFactory<Eleve, String>("Adresse"));
 		codePostalEleve.setCellValueFactory(new PropertyValueFactory<Eleve, String>("CodePostal"));
 		villeEleve.setCellValueFactory(new PropertyValueFactory<Eleve, String>("Ville"));
@@ -102,10 +115,43 @@ public class AjouterEleves extends Scene {
 		lbl_tel = new Label("Téléphone");
 
 		txt_nom = new TextField();
+		txt_nom.requestFocus();
 		txt_prenom = new TextField();
-		ch_groupeCl = new ChoiceBox();
+		ch_groupeCl = new ChoiceBox<String>();
+		ch_groupeCl.setMinWidth(100.0);;
+		
+		Tooltip tt_groupeCl = new Tooltip("Choisissez dans la liste");
+		
+		//Je récupère la liste des classes
+		File fichierClasses = new File("classes.dat");
+		List<String> liste = new ArrayList<String>();
+		ObservableList<String> classes = null;
 
-		// TODO Combo_groupeCl.setItems();
+		if (fichierClasses.exists()) {
+			try {
+				FileReader fr = new FileReader(fichierClasses);
+				BufferedReader br = new BufferedReader(fr);
+				String dataString = br.readLine();
+				String[] data = dataString.split("[|]");
+	
+				for(int i=0;i<data.length;i++) {
+					liste.add(data[i]);
+				}
+				
+				classes = FXCollections.observableList(liste);
+				
+				fr.close();
+				br.close();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}	
+		}else {
+			classes.add("fichier introuvable");
+		}
+
+		ch_groupeCl.setItems(classes);
+		ch_groupeCl.setTooltip(tt_groupeCl);
+		
 		dp = new DatePicker();
 		txt_adresse = new TextField();
 		txt_cp = new TextField();
@@ -152,7 +198,12 @@ public class AjouterEleves extends Scene {
 		Eleve eleve = new Eleve();
 		eleve.setNom(txt_nom.getText());
 		eleve.setPrenom(txt_prenom.getText());
-		// TODO récupérer la valeur de l'attribut groupeCl
+		
+		//pour la ChoiceBox, je dois transformer le nom en objet GroupeClasse
+		GroupeClasse classe = new GroupeClasse();
+		classe.setNom(ch_groupeCl.getValue());
+		eleve.setGroupeCl(classe);
+		
 		eleve.setDateNaissance(dp.getValue());
 		eleve.setAdresse(txt_adresse.getText());
 		eleve.setCodePostal(txt_cp.getText());
@@ -164,7 +215,7 @@ public class AjouterEleves extends Scene {
 		// et on vide les champs
 		txt_nom.setText("");
 		txt_prenom.setText("");
-		// TODO réinitialiser la combo
+		ch_groupeCl.setValue(null);
 		dp.setValue(null);
 		txt_adresse.setText("");
 		txt_cp.setText("");
@@ -199,16 +250,12 @@ public class AjouterEleves extends Scene {
 					oos.flush();
 					oos.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 			}
 		}
 
-	}
-
-	private void fermer_Click() {
-		stage.setScene(mainScene);
 	}
 
 }
