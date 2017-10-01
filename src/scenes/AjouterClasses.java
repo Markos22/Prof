@@ -39,7 +39,7 @@ public class AjouterClasses extends Scene {
 				creer_click();
 			}
 		});
-		File fichierClasses = new File("classes.data");
+		File fichierClasses = new File("classes.dat");
 		mesClasses = new ListView<String>();
 		mesClasses.setOnKeyPressed(ke->{
 			if(ke.getCode()==KeyCode.DELETE){
@@ -94,7 +94,7 @@ public class AjouterClasses extends Scene {
 	}
 
 	private void save_click() {
-		File fichier = new File("classes.data");
+		File fichier = new File("classes.dat");
 		try {
 			FileWriter fw = new FileWriter(fichier);
 			BufferedWriter bw = new BufferedWriter(fw);
