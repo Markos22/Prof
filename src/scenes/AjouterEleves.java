@@ -230,7 +230,7 @@ public class AjouterEleves extends Scene {
 		txt_nom.setText("");
 		txt_prenom.setText("");
 		ch_groupeCl.setValue(null);
-		dp.setValue(null);
+		dp.setValue(LocalDate.MIN);
 		txt_adresse.setText("");
 		txt_cp.setText("");
 		txt_ville.setText("");
