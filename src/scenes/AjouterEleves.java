@@ -7,9 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import Modele.Eleve;
@@ -20,6 +18,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -27,6 +26,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
@@ -38,8 +38,9 @@ import javafx.stage.Stage;
 
 public class AjouterEleves extends Scene {
 	TableView<Eleve> tableauDesEleves;
-	Button fermer;
+	Button saveAndClose;
 	Button ajouter;
+	Button annuler;
 	Stage stage;
 	Scene mainScene;
 	VBox centerBox;
@@ -56,6 +57,7 @@ public class AjouterEleves extends Scene {
 	TextField txt_nom;
 	TextField txt_prenom;
 	ChoiceBox<String> ch_groupeCl;
+	CheckBox redoublant;
 	DatePicker dp;
 	Text textAge;
 	TextField txt_adresse;
@@ -69,7 +71,10 @@ public class AjouterEleves extends Scene {
 		this.mainScene = mainScene;
 		this.setOnKeyPressed(ke -> {
 			if (ke.getCode() == KeyCode.ENTER) {
-				ajouter();
+				ajouter_OnAction();
+			}
+			else if(ke.getCode() == KeyCode.ESCAPE) {
+				annuler_OnAction();
 			}
 		});
 
@@ -79,6 +84,7 @@ public class AjouterEleves extends Scene {
 		TableColumn<Eleve, String> nomEleve = new TableColumn<Eleve, String>("Nom");
 		TableColumn<Eleve, String> prenomEleve = new TableColumn<Eleve, String>("Prénom");
 		TableColumn<Eleve, String> groupeClEleve = new TableColumn<Eleve, String>("Classe");
+		TableColumn<Eleve, Boolean> RedoublantEleve = new TableColumn<Eleve, Boolean>("Redoublant");
 		TableColumn<Eleve, LocalDate> dateNaissanceEleve = new TableColumn<Eleve, LocalDate>("Date de Naissance");
 		TableColumn<Eleve, String> adresseEleve = new TableColumn<Eleve, String>("Adresse");
 		TableColumn<Eleve, String> codePostalEleve = new TableColumn<Eleve, String>("Code Postal");
@@ -87,12 +93,11 @@ public class AjouterEleves extends Scene {
 
 		nomEleve.setCellValueFactory(new PropertyValueFactory<Eleve, String>("Nom"));
 		prenomEleve.setCellValueFactory(new PropertyValueFactory<Eleve, String>("Prenom"));
-		
-		
 		groupeClEleve.setCellValueFactory(new PropertyValueFactory<Eleve,String>("GroupeCl"));
 		
+		RedoublantEleve.setCellFactory(tc->new CheckBoxTableCell<Eleve, Boolean>());
+		RedoublantEleve.setCellValueFactory(new PropertyValueFactory<Eleve, Boolean>("Redoublant"));
 		dateNaissanceEleve.setCellValueFactory(new PropertyValueFactory<Eleve, LocalDate>("DateNaissance"));
-		
 		adresseEleve.setCellValueFactory(new PropertyValueFactory<Eleve, String>("Adresse"));
 		codePostalEleve.setCellValueFactory(new PropertyValueFactory<Eleve, String>("CodePostal"));
 		villeEleve.setCellValueFactory(new PropertyValueFactory<Eleve, String>("Ville"));
@@ -147,13 +152,11 @@ public class AjouterEleves extends Scene {
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}	
-		}else {
-			classes.add("fichier introuvable");
 		}
 
 		ch_groupeCl.setItems(classes);
 		ch_groupeCl.setTooltip(tt_groupeCl);
-		
+		redoublant = new CheckBox("Redoublant");
 		dp = new DatePicker();
 		textAge = new Text("");
 		txt_adresse = new TextField();
@@ -167,6 +170,7 @@ public class AjouterEleves extends Scene {
 		gridForm.add(txt_prenom, 1, 1);
 		gridForm.add(lbl_groupeCl, 0, 2);
 		gridForm.add(ch_groupeCl, 1, 2);
+		gridForm.add(redoublant, 2, 2);
 		gridForm.add(lbl_dn, 0, 3);
 		gridForm.add(dp, 1, 3);
 		gridForm.add(textAge, 2, 3);
@@ -183,12 +187,13 @@ public class AjouterEleves extends Scene {
 		centerBox.getChildren().addAll(tableauDesEleves, gridForm);
 
 		root.setCenter(centerBox);
-		tableauDesEleves.getColumns().addAll(nomEleve, prenomEleve, groupeClEleve, dateNaissanceEleve, adresseEleve,
+		tableauDesEleves.getColumns().addAll(nomEleve, prenomEleve, groupeClEleve, RedoublantEleve, dateNaissanceEleve, adresseEleve,
 				codePostalEleve, villeEleve, telephoneEleve);
 
 		boutons.setAlignment(Pos.CENTER);
 		root.setBottom(boutons);
 		
+		//Calcul de l'âge
 		dp.setOnAction(e->{
 			LocalDate date = dp.getValue();
 			int age = date.until(LocalDate.now()).getYears();
@@ -197,17 +202,21 @@ public class AjouterEleves extends Scene {
 		});
 
 		ajouter = new Button("Ajouter");
-		ajouter.setOnAction(e -> ajouter());
-		fermer = new Button("Sauvegarder et fermer");
-		fermer.setOnAction(e -> save_and_close());
+		ajouter.setOnAction(e -> ajouter_OnAction());
+		
+		saveAndClose = new Button("Sauvegarder et fermer");
+		saveAndClose.setOnAction(e -> saveAndClose_OnAction());
+		
+		annuler = new Button("Annuler");
+		annuler.setOnAction(e-> annuler_OnAction());
 
-		boutons.getChildren().addAll(ajouter, fermer);
+		boutons.getChildren().addAll(ajouter, saveAndClose, annuler);
 		
 		txt_nom.requestFocus();
 
 	}
 
-	private void ajouter() {
+	private void ajouter_OnAction() {
 		// TODO Auto-generated method stub
 		Eleve eleve = new Eleve();
 		eleve.setNom(txt_nom.getText());
@@ -217,7 +226,7 @@ public class AjouterEleves extends Scene {
 		GroupeClasse classe = new GroupeClasse();
 		classe.setNom(ch_groupeCl.getValue());
 		eleve.setGroupeCl(classe);
-		
+		eleve.setRedoublant(redoublant.isSelected());
 		eleve.setDateNaissance(dp.getValue());
 		eleve.setAdresse(txt_adresse.getText());
 		eleve.setCodePostal(txt_cp.getText());
@@ -230,15 +239,18 @@ public class AjouterEleves extends Scene {
 		txt_nom.setText("");
 		txt_prenom.setText("");
 		ch_groupeCl.setValue(null);
-		dp.setValue(LocalDate.MIN);
+		redoublant.setSelected(false);
+		dp.setValue(LocalDate.now());
 		txt_adresse.setText("");
 		txt_cp.setText("");
 		txt_ville.setText("");
 		txt_tel.setText("");
+		
+		txt_nom.requestFocus();
 
 	}
 
-	private void save_and_close() {
+	private void saveAndClose_OnAction() {
 
 		FileOutputStream fichier;
 		ObjectOutputStream oos = null;
@@ -266,8 +278,13 @@ public class AjouterEleves extends Scene {
 					e.printStackTrace();
 				}
 			}
+			stage.setScene(mainScene);
 		}
 
+	}
+	
+	private void annuler_OnAction() {
+		stage.setScene(mainScene);
 	}
 
 }

@@ -38,6 +38,9 @@ public class AjouterClasses extends Scene {
 			if(ke.getCode()==KeyCode.ENTER){
 				creer_click();
 			}
+			else if(ke.getCode()==KeyCode.ESCAPE) {
+				annuler_click();
+			}
 		});
 
 		mesClasses = new ListView<String>();
@@ -131,6 +134,10 @@ public class AjouterClasses extends Scene {
 		nouvelleClasse.clear();
 		nouvelleClasse.requestFocus();
 		
+	}
+	
+	private void annuler_click() {
+		stage.setScene(mainScene);
 	}
 
 }

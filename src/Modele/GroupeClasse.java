@@ -4,10 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 
 import javafx.collections.ObservableList;
 
-public class GroupeClasse {
+public class GroupeClasse implements Serializable {
 	private static ObservableList<String> listeClasses;
 	private String nom;
 	private ObservableList <Eleve>listeEleves;

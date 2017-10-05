@@ -2,13 +2,17 @@ package Modele;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 public class Eleve implements Serializable {
+	/**
+	 * Elèves
+	 */
+	private static final long serialVersionUID = 1L;
 	private String nom;
 	private String prenom;
 	private transient boolean fille = false;
-	private transient GroupeClasse groupeCl = null;	private transient boolean redoublant = false;
+	private GroupeClasse groupeCl = null;
+	private transient boolean redoublant = false;
 	private LocalDate dateNaissance;
 	private String adresse;
 	private String CodePostal;
